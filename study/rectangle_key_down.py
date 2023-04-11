@@ -22,7 +22,8 @@ def main():
         screen.fill((0, 170, 0))
 
         pygame.draw.rect(surface=screen, rect=rect, color=(0, 120, 0) if rectangle_state_on else (120, 0, 0))
-        pygame.display.update()
+        # pygame.display.update()
+        pygame.display.flip()
     pygame.quit()
 
 
