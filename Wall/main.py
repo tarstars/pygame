@@ -17,8 +17,8 @@ def main():
                 running = False
         screen.fill((0, 0, 0))
         screen.blit(img_torch,(10,10))
-        for v in range()
-        screen.blit(img_bricks, (60, 10))
+        for v in range(60,1150,40):
+            screen.blit(img_bricks, (v, 10))
         pygame.display.update()
     pygame.quit()
 

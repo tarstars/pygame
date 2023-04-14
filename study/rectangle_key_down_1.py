@@ -7,7 +7,7 @@ def main():
     screen = pygame.display.set_mode(shape)
     running = True
 
-    rect = pygame.Rect(200, 300, 50, 70)
+    rect = pygame.Rect(120, 300, 100, 100)
     rectangle_state_on = True
 
     clock = pygame.time.Clock()
@@ -21,10 +21,7 @@ def main():
                     rectangle_state_on = not rectangle_state_on
         screen.fill((0, 170, 0))
 
-        pygame.draw.rect(surface=screen, rect=rect, color=(0, 120, 0) if rectangle_state_on else (120, 0, 0))
-        pygame.draw.rect(surface=screen, rect=rect, color=(120, 120, 0) if rectangle_state_on else (120, 120, 0))
-        pygame.draw.rect(surface=screen, rect=rect, color=(120, 120, 0) if rectangle_state_on else (120, 35, 0))
-        pygame.draw.rect(surface=screen, rect=rect, color=(120, 18, 0) if rectangle_state_on else (5, 120, 4))
+        pygame.draw.arc(surface=screen, rect=rect, color=(120, 0, 120) if rectangle_state_on else (120, 120, 50), start_angle=12, stop_angle=50, width=100)
         # pygame.display.update()
         pygame.display.flip()
     pygame.quit()
