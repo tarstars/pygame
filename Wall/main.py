@@ -1,5 +1,16 @@
 import pygame
 
+def draw_ground(screen,width,height,img_torch,img_bricks):
+    p = 0
+    for line in open("Scene"):
+        v = 0
+        for c in line:
+            if c == "B":
+                screen.blit(img_bricks, (v, 10 + p * 51))
+            elif c == "F":
+                screen.blit(img_torch, (v, 10 + p * 51))
+            v += 50
+        p += 1
 
 def main():
     shape = width, height = (1200, 800)
@@ -16,11 +27,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((0, 0, 0))
-        screen.blit(img_torch,(10,10))
-        for v in range(60,1150,40):
-            screen.blit(img_bricks, (v, 10))
+        draw_ground(screen,width,height,img_torch,img_bricks)
         pygame.display.update()
     pygame.quit()
+
+print("somebody want told me that world is gonna rowming i have do it only in shit")
 
 
 if __name__ == "__main__":
