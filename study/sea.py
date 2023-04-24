@@ -6,7 +6,19 @@ import random
 def draw_sun(screen, local_meter, y):
     n = 17
     r = 200
-    pygame.draw.circle(surface=screen, color=(250, 250, 0), center=(local_meter, y), radius=100)
+
+    cx, cy = local_meter, y
+    color = (250, 250, 0)
+    pygame.draw.circle(surface=screen, color=color, center=(cx, cy), radius=100)
+
+    for angle_meter in range(n):
+        phi = 2 * math.pi * angle_meter / n
+        dx, dy = r * math.cos(phi), r * math.sin(phi)
+        pygame.draw.line(surface=screen,
+                         color=color,
+                         start_pos=(cx, cy),
+                         end_pos=(cx + dx, cy + dy),
+                         width=5)
 
 
 def draw_scene(screen, width, height, meter):
