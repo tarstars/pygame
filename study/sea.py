@@ -23,18 +23,18 @@ def draw_sun(screen, local_meter, y):
 
 def draw_scene(screen, width, height, meter):
     local_meter = (meter * 5) % width
-    pygame.draw.rect(surface=screen, color=(0, 0, 0), rect=(0, 0, 100, 70))
+    pygame.draw.rect(surface=screen, color=(102, 178, 255), rect=(0, 0, width, height//3))
 
     draw_sun(screen, local_meter, 100)
 
     for _ in range(30):
         pygame.draw.arc(surface=screen, color=(0, 255, 255),
-                        rect=(random.randint(10, width), random.randint(10, height), 70, 70), start_angle=0,
+                        rect=(random.randint(10, width), random.randint(height//3, height), 70, 70), start_angle=0,
                         stop_angle=3.14,
                         width=3)
     for _ in range(30):
         pygame.draw.arc(surface=screen, color=(255, 255, 255),
-                        rect=(random.randint(10, width), random.randint(10, height), 90, 80), start_angle=4.16,
+                        rect=(random.randint(10, width), random.randint(height//3, height), 90, 80), start_angle=4.16,
                         stop_angle=3.14,
                         width=8)
 
@@ -48,7 +48,7 @@ def main():
     clock = pygame.time.Clock()
     meter = 0
     while running:
-        clock.tick(10)
+        clock.tick(5)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
