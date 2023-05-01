@@ -27,6 +27,30 @@ def main():
                          end_pos=(600 + math.cos(2 / 5 * math.pi * r + t) * 300, height),
                          width=2
                          )
+        pygame.draw.line(surface=screen,
+                         color=(255, 255, 0),
+                         start_pos=(600 + math.cos(-2 / 5 * math.pi * r + t) * 300, 0),
+                         end_pos=(600 + math.cos(-2 / 5 * math.pi * r + t) * 300, height),
+                         width=2
+                         )
+        pygame.draw.line(surface=screen,
+                         color=(255, 0, 0),
+                         start_pos=(600 + math.cos(4 / 5 * math.pi * r + t) * 300, 0),
+                         end_pos=(600 + math.cos(4 / 5 * math.pi * r + t) * 300, height),
+                         width=2
+                         )
+        pygame.draw.line(surface=screen,
+                         color=(255, 0, 255),
+                         start_pos=(600 + math.cos(-4 / 5 * math.pi * r + t) * 300, 0),
+                         end_pos=(600 + math.cos(-4 / 5 * math.pi * r + t) * 300, height),
+                         width=2
+                         )
+        pygame.draw.line(surface=screen,
+                         color=(255, 128, 0),
+                         start_pos=(600 + math.cos(0 / 5 * math.pi * r + t) * 300, 0),
+                         end_pos=(600 + math.cos(0 / 5 * math.pi * r + t) * 300, height),
+                         width=2
+                         )
 
         t+=0.01
         pygame.display.update()
