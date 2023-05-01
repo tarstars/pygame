@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 
 def main():
@@ -8,8 +9,6 @@ def main():
     screen = pygame.display.set_mode(shape)
     running = True
     t = 0
-    col = [(0, 0, 255), (255, 255, 0), (255, 0, 0), (255, 0, 255), (255, 128, 0)]
-
     clock = pygame.time.Clock()
     while running:
         clock.tick(40)
@@ -21,12 +20,12 @@ def main():
             pygame.draw.circle(screen, (250, 0, 0), (600 + math.cos(2/5*math.pi*r+t) * 300, 400 - math.sin(2/5*math.pi*r+t) * 300), 10)
         for r in range(5):
             pygame.draw.circle(screen, (250, 0, 0), (600 + math.cos(2/5*math.pi*r+t) * 300, 400 + math.sin(2/5*math.pi*r+t) * 300), 10)
-            pygame.draw.line(surface=screen,
-                            color=col[r],
-                            start_pos=(600 + math.cos(2/5*math.pi*r+t) * 300, 0),
-                            end_pos=(600 + math.cos(2 / 5 * math.pi * r + t) * 300, height),
-                            width=5
-                            )
+        pygame.draw.line(surface=screen,
+                        color=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)),
+                        start_pos=(math.cos(2/5 * math.pi*1+t)*300+width//2, 0),
+                        end_pos=(math.cos(2/5 * math.pi*1+t)*300+width//2, height),
+                        width=5
+                        )
 
         t += 0.01
         pygame.display.update()
