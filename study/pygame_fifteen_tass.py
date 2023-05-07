@@ -32,7 +32,7 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     hole_next_y += 1
 
-        if (hole_x, hole_y) != (hole_next_x, hole_next_y):
+        if (hole_x, hole_y) != (hole_next_x, hole_next_y) and 0 <= hole_next_x < 4 and 0 <= hole_next_y < 4 :
             field[hole_y][hole_x], field[hole_next_y][hole_next_x] = field[hole_next_y][hole_next_x], field[hole_y][hole_x]
             hole_x, hole_y = hole_next_x, hole_next_y
 
