@@ -13,7 +13,7 @@ def main():
     field = [[10, 13, 12, 3],
              [4, 5, 6, 7],
              [8, 9, 0, 11],
-             [2, 1, 14, None]]
+             [2, 14, 1, None]]
     state = "game"
     hole_x, hole_y = 3, 3
 
