@@ -21,14 +21,14 @@ def main():
                     state = 1
                     animation_x = center_x
                     animation_y = center_y
-                    if event.key == pygame.K_UP:
-                        center_y -= 100
-                    elif event.key == pygame.K_DOWN:
-                        center_y += 100
-                    elif event.key == pygame.K_LEFT:
-                        center_x -= 100
-                    elif event.key == pygame.K_RIGHT:
-                        center_x += 100
+                if event.key == pygame.K_UP:
+                    center_y -= 100
+                elif event.key == pygame.K_DOWN:
+                    center_y += 100
+                elif event.key == pygame.K_LEFT:
+                    center_x -= 100
+                elif event.key == pygame.K_RIGHT:
+                    center_x += 100
         screen.fill((0, 170, 0))
         if state == 0:
             pygame.draw.circle(surface=screen, color=(100, 0, 100), center=(center_x, center_y), radius=50)
