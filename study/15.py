@@ -1,4 +1,19 @@
+from typing import List, Optional
+
+import copy
 import pygame
+
+
+def find_hole(field: List[List[Optional[int]]]):
+    """Finds the position of a hole on board.
+
+    :param field: a field for 15 game
+    :return: a tuple with x, y coordinates of a hole
+    """
+    for y in range(len(field)):
+        for x in range(len(field[0])):
+            if field[y][x] is None:
+                return x, y
 
 
 def main():
@@ -12,10 +27,14 @@ def main():
     fail_sound = pygame.mixer.Sound("../Sounds/fail.mp3")
     win_music = pygame.mixer.Sound("../Sounds/win.mp3")
     reload_sound = pygame.mixer.Sound("../Sounds/reload.mp3")
-    field = [[10, 13, 12, 3],
-            [4, 5, 6, 7],
-            [8, 9, 0, 11],
-            [2, 14, 1, None]]
+    # field = [[10, 13, 12, 3],
+    #         [4, 5, None, 7],
+    #         [8, 9, 0, 11],
+    #         [2, 14, 1, 6]]
+    field = [[0, 1, 2, 3],
+                    [4, 5, 6, 7],
+                    [8, 9, 10, 11],
+                    [12, 13, None, 14]]
     field_solved = [[0, 1, 2, 3],
                     [4, 5, 6, 7],
                     [8, 9, 10, 11],
@@ -25,7 +44,7 @@ def main():
                 [8, 9, 0, 11],
                 [2, 14, 1, None]]
     state = "game"
-    hole_x, hole_y = 3, 3
+    hole_x, hole_y = find_hole(field)
 
     clock = pygame.time.Clock()
     while running:
@@ -52,14 +71,16 @@ def main():
                 elif event.key == pygame.K_s:
                     hole_next_y += 1
                 elif event.key == pygame.K_SPACE:
-                    field = field_copy
+                    field = copy.deepcopy(field_copy)
+                    hole_x, hole_y = find_hole(field)
+                    hole_next_x, hole_next_y = hole_x, hole_y
                     pygame.mixer.Sound.play(reload_sound)
 
         if (hole_x, hole_y) != (hole_next_x, hole_next_y):
             if 0 <= hole_next_x < 4 and 0 <= hole_next_y < 4:
                 field[hole_y][hole_x], field[hole_next_y][hole_next_x] = field[hole_next_y][hole_next_x], field[hole_y][hole_x]
                 if field == field_solved:
-                    state = "win"
+                    state = "play_win_sound"
                 hole_x, hole_y = hole_next_x, hole_next_y
                 pygame.mixer.Sound.play(click_sound)
             else:
@@ -71,9 +92,11 @@ def main():
                     v = field[y][x]
                     if v is not None:
                         screen.blit(numbers[v], (width // 2 + 100 * (x - 2), height // 2 + 100 * (y - 2)))
-        elif state == "win":
+        elif state == "play_win_sound":
             pygame.mixer.Sound.play(win_music)
-            state = "end"
+            state = "win"
+        elif state == "win":
+            pass
 
         pygame.display.update()
     pygame.quit()
