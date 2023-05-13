@@ -44,6 +44,9 @@ def main():
         my_key = None
         if state == "shuffle":
             my_key = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN][random.randint(0, 3)]
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -66,9 +69,11 @@ def main():
                 if field == field_solved and state != "shuffle":
                     state = "win"
                 hole_x, hole_y = hole_next_x, hole_next_y
-                # pygame.mixer.Sound.play(click_sound)
-            # else:
-            #    pygame.mixer.Sound.play(fart_sound)
+                if state == 'game':
+                    pygame.mixer.Sound.play(click_sound)
+            else:
+                if state == "game":
+                    pygame.mixer.Sound.play(fart_sound)
 
         screen.fill((0, 170, 0))
 
