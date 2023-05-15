@@ -18,7 +18,6 @@ def main():
                 running = False
         screen.fill((0, 0, 100))
 
-
         r = 200 + 150 * math.cos(t / 3)
         x = width // 2 + r * math.cos(t)
         y = height // 2 - r * math.sin(t)
