@@ -1,3 +1,4 @@
+import random
 from typing import List, Optional
 
 import copy
@@ -27,23 +28,20 @@ def main():
     fail_sound = pygame.mixer.Sound("../Sounds/fail.mp3")
     win_music = pygame.mixer.Sound("../Sounds/win.mp3")
     reload_sound = pygame.mixer.Sound("../Sounds/reload.mp3")
-    # field = [[10, 13, 12, 3],
-    #         [4, 5, None, 7],
-    #         [8, 9, 0, 11],
-    #         [2, 14, 1, 6]]
-    field = [[0, 1, 2, 3],
-                    [4, 5, 6, 7],
-                    [8, 9, 10, 11],
-                    [12, 13, None, 14]]
     field_solved = [[0, 1, 2, 3],
                     [4, 5, 6, 7],
                     [8, 9, 10, 11],
                     [12, 13, 14, None]]
+    field = [[10, 13, 12, 3],
+            [4, 5, 7, 6],
+            [8, 9, 0, 11],
+            [2, 14, 1, None]]
     field_copy = [[10, 13, 12, 3],
-                [4, 5, 6, 7],
+                [4, 5, 7, 6],
                 [8, 9, 0, 11],
                 [2, 14, 1, None]]
-    state = "game"
+    state = "shuffle"
+    shuffle_meter = 300
     hole_x, hole_y = find_hole(field)
 
     clock = pygame.time.Clock()
@@ -53,24 +51,28 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+            elif state == "shuffle" or event.type == pygame.KEYDOWN:
+                if state == "game":
+                    my_key = event.key
+                elif state == "shuffle":
+                    my_key = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_UP][random.randint(0, 3)]
+                if my_key == pygame.K_LEFT:
                     hole_next_x -= 1
-                elif event.key == pygame.K_RIGHT:
+                elif my_key == pygame.K_RIGHT:
                     hole_next_x += 1
-                elif event.key == pygame.K_UP:
+                elif my_key == pygame.K_UP:
                     hole_next_y -= 1
-                elif event.key == pygame.K_DOWN:
+                elif my_key == pygame.K_DOWN:
                     hole_next_y += 1
-                elif event.key == pygame.K_a:
+                elif my_key == pygame.K_a:
                     hole_next_x -= 1
-                elif event.key == pygame.K_d:
+                elif my_key == pygame.K_d:
                     hole_next_x += 1
-                elif event.key == pygame.K_w:
+                elif my_key == pygame.K_w:
                     hole_next_y -= 1
-                elif event.key == pygame.K_s:
+                elif my_key == pygame.K_s:
                     hole_next_y += 1
-                elif event.key == pygame.K_SPACE:
+                elif my_key == pygame.K_SPACE:
                     field = copy.deepcopy(field_copy)
                     hole_x, hole_y = find_hole(field)
                     hole_next_x, hole_next_y = hole_x, hole_y
@@ -86,7 +88,11 @@ def main():
             else:
                 pygame.mixer.Sound.play(fail_sound)
         screen.fill((0, 170, 0))
-        if state == "game":
+        if state == "shuffle":
+            shuffle_meter -= 1
+            if shuffle_meter == 0:
+                state = "game"
+        elif state == "game":
             for x in range(4):
                 for y in range(4):
                     v = field[y][x]
