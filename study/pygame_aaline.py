@@ -2,8 +2,12 @@ import pygame
 
 
 def draw_scene(screen, width, height):
-    for p in range(0, 400, 10):
-        pygame.draw.aaline(screen, (255, 255, 0), (200, 200 + p), (200 + p, 600))
+    r = min(width // 2, height // 2)
+    for p in range(0, r, 10):
+        pygame.draw.aaline(screen, (255, 255, 0), (width // 2, height // 2 - r + p), (width // 2 + p, height // 2))
+        pygame.draw.aaline(screen, (255, 255, 0), (width // 2, height // 2 + r - p), (width // 2 - p, height // 2))
+        pygame.draw.aaline(screen, (255, 255, 0), (width // 2, height // 2 - r + p), (width // 2 - p, height // 2))
+        pygame.draw.aaline(screen, (255, 255, 0), (width // 2, height // 2 + r - p), (width // 2 + p, height // 2))
 
 
 def main():
