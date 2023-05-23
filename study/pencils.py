@@ -20,7 +20,8 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
-    n = random.randint(5, 20)
+    n = random.randint(5, 16)
+    loose_background = pygame.image.load("../Backgrounds/Loose_background.PNG")
     background = pygame.image.load("../Backgrounds/background.PNG")
     p_unsel = transform(pygame.image.load("../Pencils/green.jpg"))
     p_sel = transform(pygame.image.load("../Pencils/green_selected.jpg"))
@@ -28,7 +29,7 @@ def main():
     n_sel = 1
     font = pygame.font.SysFont(None, 100)
     img_win = font.render("YOU WIN!", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
-    img_loose = font.render("YOU LOOSE!", True, (255, 0, 0))
+    game_over_sound = pygame.mixer.Sound("../Sounds/game_over.mp3")
 
 
     clock = pygame.time.Clock()
@@ -65,7 +66,7 @@ def main():
         if state == "choosing":
             screen.blit(background, (0, 0))
             for v in range(n):
-                screen.blit(p_unsel if v < n - n_sel else p_sel, (0 + v * p_unsel.get_width(), height // 2))
+                screen.blit(p_unsel if v < n - n_sel else p_sel, (0 + v * p_unsel.get_width(), height // 2 + 100))
         elif state == "bot_choosing":
             screen.blit(img_text, (width // 2 - img_text.get_width() // 2, height // 2 - img_text.get_height() // 2))
             bot_meter -= 1
@@ -82,7 +83,8 @@ def main():
             if meter_win == 0:
                 running = False
         elif state == "loose":
-            screen.blit(img_loose, (width // 2 - img_text.get_width() // 2, height // 2 - img_text.get_height() // 2))
+            screen.blit(loose_background, (0, 0))
+            pygame.mixer.Sound.play(game_over_sound)
             meter_loose -= 1
             if meter_loose == 0:
                 running = False
