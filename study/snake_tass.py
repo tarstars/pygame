@@ -1,3 +1,5 @@
+from collections import deque
+
 import pygame
 
 
@@ -9,10 +11,12 @@ def main():
 
     dx, dy = 10, 0
     cx, cy = width // 2, height // 2
+    x, y = cx, cy
+    q = deque()
 
     clock = pygame.time.Clock()
     while running:
-        clock.tick(40)
+        clock.tick(5)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -25,10 +29,16 @@ def main():
                     dx, dy = 0, 10
                 elif event.key == pygame.K_d:
                     dx, dy = 10, 0
+
+        x, y = x + dx, y + dy
+        q.append((x, y))
+        if len(q) > 9:
+            q.popleft()
+
         screen.fill((0, 170, 0))
 
-        pygame.draw.circle(surface=screen, color=(255, 0, 0), center=(cx, cy), radius=3)
-        pygame.draw.circle(surface=screen, color=(255, 0, 0), center=(cx + dx, cy + dy), radius=3)
+        for pos in q:
+            pygame.draw.circle(surface=screen, color=(255, 0, 0), center=pos, radius=10)
 
         pygame.display.update()
     pygame.quit()
