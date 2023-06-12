@@ -1,5 +1,8 @@
+import random
+
 import pygame
 
+PYTHON_R = 40
 
 class OurQueue:
     def __init__(self, n):
@@ -41,9 +44,13 @@ def main():
     screen = pygame.display.set_mode(shape)
     running = True
 
-    dx, dy = 10, 0
+    dx, dy = PYTHON_R, 0
     cx, cy = width // 2, height // 2
     x, y = cx, cy
+
+    apple_x, apple_y = 0, 0
+    apple = False
+
     q = OurQueue(1000)
 
     clock = pygame.time.Clock()
@@ -54,23 +61,32 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
-                    dx, dy = -10, 0
+                    dx, dy = -PYTHON_R, 0
                 elif event.key == pygame.K_w:
-                    dx, dy = 0, -10
+                    dx, dy = 0, -PYTHON_R
                 elif event.key == pygame.K_s:
-                    dx, dy = 0, 10
+                    dx, dy = 0, PYTHON_R
                 elif event.key == pygame.K_d:
-                    dx, dy = 10, 0
+                    dx, dy = PYTHON_R, 0
+
+        if not apple:
+            apple = True
+            apple_x, apple_y = random.randint(1, width // PYTHON_R - 1) * PYTHON_R, random.randint(1, height // PYTHON_R - 1) * PYTHON_R
 
         x, y = x + dx, y + dy
         q.push((x, y))
-        if len(q) > 20:
+        if len(q) > 20 and (x, y) != (apple_x, apple_y):
             q.pop()
 
-        screen.fill((0, 170, 0))
+        if (x, y) == (apple_x, apple_y):
+            apple = False
+
+        screen.fill((0, 70, 0))
 
         for pos in q:
-            pygame.draw.circle(surface=screen, color=(255, 0, 0), center=pos, radius=10)
+            pygame.draw.circle(surface=screen, color=(125, 125, 0), center=pos, radius=PYTHON_R // 2)
+        if apple:
+            pygame.draw.circle(surface=screen, color=(255, 0, 0), center=(apple_x, apple_y), radius=PYTHON_R // 2)
 
         pygame.display.update()
     pygame.quit()
@@ -78,3 +94,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# python eats an apple: x == apple_x and y == apple_y
+# we are to cut a tail === python doesn't eat an apple 
+#        not (x == apple_x and y == apple_y)
+#            (x != apple_x or y != apple_y)
+
