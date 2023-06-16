@@ -84,6 +84,8 @@ def main():
                 elif event.key == pygame.K_SPACE:
                     pygame.mixer.Sound.play(pew_sound)
         x, y = x + dx, y + dy
+        if (x, y) in queue:
+            running = False
         queue.push((x, y))
         if len(queue) > 20 and (x, y) != (apple_x, apple_y):
             queue.pop()
@@ -91,8 +93,6 @@ def main():
             apple = False
 
         screen.fill((0, 170, 0))
-        if (x, y) in queue:
-            running = False
         if (apple_x, apple_y) in queue:
             apple = False
         if x > width or height > height:
