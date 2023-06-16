@@ -95,7 +95,7 @@ def main():
         screen.fill((0, 170, 0))
         if (apple_x, apple_y) in queue:
             apple = False
-        if x > width or height > height:
+        if x > width or y > height or x < 0 or y < 0:
             running = False
         for v in queue:
             pygame.draw.circle(screen, (50, 250, 50), v, PYTHON_R // 2)
