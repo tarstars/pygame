@@ -87,7 +87,7 @@ def main():
         queue.push((x, y))
         if len(queue) > 20 and (x, y) != (apple_x, apple_y):
             queue.pop()
-        else:
+        if apple_x == x and apple_y == y:
             apple = False
         screen.fill((0, 170, 0))
         if x == queue(x) and y == queue(y):
