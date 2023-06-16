@@ -42,7 +42,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
-    dx = 10
+    dx = 20
     dy = 0
     x = width // 2
     y = height // 2
@@ -86,6 +86,12 @@ def main():
         else:
             apple = False
         screen.fill((0, 170, 0))
+        if x == queue(x) and y == queue(y):
+            running = False
+        if apple_x == queue(x) and apple_y == queue(y):
+            apple = False
+        if x > width or height > height:
+            running = False
         for v in queue:
             pygame.draw.circle(screen, (50, 250, 50), v, Python_R // 2)
         if apple:
