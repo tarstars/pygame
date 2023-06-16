@@ -35,6 +35,7 @@ class OurQueue:
         if self.l <= self.r:
             return self.r - self.l
         return self.n - (self.l - self.r)
+    PYTHON_R = 40
 
 
 def main():
@@ -42,14 +43,14 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
-    dx = 20
+    dx = PYTHON_R
     dy = 0
     x = width // 2
     y = height // 2
     apple = False
     apple_x = 0
     apple_y = 0
-    Python_R = 40
+
     queue = OurQueue(1000)
     pew_sound = pygame.mixer.Sound("../Sounds/a8887ebd8bd4435.mp3")
 
@@ -59,23 +60,23 @@ def main():
 
         for event in pygame.event.get():
             if not apple:
-                apple_x = random.randint(0, width // Python_R) * Python_R
-                apple_y = random.randint(0, height // Python_R) * Python_R
+                apple_x = random.randint(0, width // PYTHON_R) * PYTHON_R
+                apple_y = random.randint(0, height // PYTHON_R) * PYTHON_R
                 apple = True
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
-                    dx = -Python_R
+                    dx = -PYTHON_R
                     dy = 0
                 elif event.key == pygame.K_w:
                     dx = 0
-                    dy = -Python_R
+                    dy = -PYTHON_R
                 elif event.key == pygame.K_s:
                     dx = 0
-                    dy = Python_R
+                    dy = PYTHON_R
                 elif event.key == pygame.K_d:
-                    dx = Python_R
+                    dx = PYTHON_R
                     dy = 0
                 elif event.key == pygame.K_SPACE:
                     pygame.mixer.Sound.play(pew_sound)
