@@ -71,9 +71,13 @@ def main():
 
         if not apple:
             apple = True
-            apple_x, apple_y = random.randint(1, width // PYTHON_R - 1) * PYTHON_R, random.randint(1, height // PYTHON_R - 1) * PYTHON_R
+            apple_x, apple_y = random.randint(1, width // PYTHON_R - 1) * PYTHON_R, random.randint(1, height // PYTHON_R - 1) * PYTHON_R  # TODD: repeat while apple is in snake
 
         x, y = x + dx, y + dy
+
+        if (x, y) in set(q):
+            print("snake eats itself")
+
         q.push((x, y))
         if len(q) > 20 and (x, y) != (apple_x, apple_y):
             q.pop()
@@ -83,6 +87,9 @@ def main():
 
         screen.fill((0, 70, 0))
 
+        # set(q) - set of coordinates of snake's body
+        # (apple_x, apple_y) in set(q) - check whether apple is inside the snake
+                
         for pos in q:
             pygame.draw.circle(surface=screen, color=(125, 125, 0), center=pos, radius=PYTHON_R // 2)
         if apple:
@@ -100,4 +107,6 @@ if __name__ == "__main__":
 # we are to cut a tail === python doesn't eat an apple 
 #        not (x == apple_x and y == apple_y)
 #            (x != apple_x or y != apple_y)
+
+
 
