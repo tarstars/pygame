@@ -35,7 +35,10 @@ class OurQueue:
         if self.l <= self.r:
             return self.r - self.l
         return self.n - (self.l - self.r)
-    PYTHON_R = 40
+
+
+
+PYTHON_R = 40
 
 
 def main():
