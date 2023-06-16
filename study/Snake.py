@@ -61,11 +61,11 @@ def main():
     while running:
         clock.tick(10)
 
+        if not apple:
+            apple_x = random.randint(0, width // PYTHON_R) * PYTHON_R
+            apple_y = random.randint(0, height // PYTHON_R) * PYTHON_R
+            apple = True
         for event in pygame.event.get():
-            if not apple:
-                apple_x = random.randint(0, width // PYTHON_R) * PYTHON_R
-                apple_y = random.randint(0, height // PYTHON_R) * PYTHON_R
-                apple = True
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
@@ -97,9 +97,9 @@ def main():
         if x > width or height > height:
             running = False
         for v in queue:
-            pygame.draw.circle(screen, (50, 250, 50), v, Python_R // 2)
+            pygame.draw.circle(screen, (50, 250, 50), v, PYTHON_R // 2)
         if apple:
-            pygame.draw.circle(screen, (250, 0, 0), (apple_x, apple_y), Python_R // 2)
+            pygame.draw.circle(screen, (250, 0, 0), (apple_x, apple_y), PYTHON_R // 2)
         pygame.display.update()
     pygame.quit()
 
