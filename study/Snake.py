@@ -89,10 +89,11 @@ def main():
             queue.pop()
         if apple_x == x and apple_y == y:
             apple = False
+
         screen.fill((0, 170, 0))
-        if x == queue(x) and y == queue(y):
+        if (x, y) in queue:
             running = False
-        if apple_x == queue(x) and apple_y == queue(y):
+        if (apple_x, apple_y) in queue:
             apple = False
         if x > width or height > height:
             running = False
