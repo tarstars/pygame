@@ -42,6 +42,7 @@ PYTHON_R = 40
 
 
 def main():
+    fail_sound = pygame.mixer.Sound("../Sounds/fail.mp3")
     shape = width, height = (1200, 800)
     pygame.init()
     screen = pygame.display.set_mode(shape)
