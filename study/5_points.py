@@ -17,7 +17,7 @@ def main():
                 running = False
         screen.fill((0, 170, 0))
         for r in range(5):
-            pygame.draw.circle(surface=screen, colour=(250, 0, 0), center=(600 + math.cos(2/5*math.pi*r) * 300, 400 + math.sin(2/5*math.pi*r) * 300), width=10)
+            pygame.draw.circle(surface=screen, color=(250, 0, 0), center=(600 + math.cos(2/5*math.pi*r) * 300, 400 + math.sin(2/5*math.pi*r) * 300), radius=10)
         pygame.display.update()
     pygame.quit()
 
