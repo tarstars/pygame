@@ -89,7 +89,7 @@ def main():
 
         # set(q) - set of coordinates of snake's body
         # (apple_x, apple_y) in set(q) - check whether apple is inside the snake
-                
+
         for pos in q:
             pygame.draw.circle(surface=screen, color=(125, 125, 0), center=pos, radius=PYTHON_R // 2)
         if apple:
