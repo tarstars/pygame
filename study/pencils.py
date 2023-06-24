@@ -60,8 +60,8 @@ def main():
                         state = "bot_choosing"
                         bot_meter = 120
                         bot_move = optimal_move(n)
-                        text_massage = f"I want to take {bot_move}"
-                    img_text = font.render(text_massage, True, (255, 0, 0))
+                        message_text = f"I want to take {bot_move}"
+                    img_text = font.render(message_text, True, (255, 0, 0))
         screen.fill((0, 170, 0))
         if state == "choosing":
             screen.blit(background, (0, 0))

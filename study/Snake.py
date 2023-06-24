@@ -43,9 +43,10 @@ PYTHON_R = 40
 
 def main():
     shape = width, height = (1200, 800)
+    font = pygame.font.SysFont(None, 100)
     score = 0
-    text_massage = f"Score: {score}"
-    img_text = font.render(text_massage, True, (255, 0, 0))
+    text_message = f"Score: {score}"
+    img_text = font.render(text_message, True, (255, 0, 0))
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
@@ -105,6 +106,7 @@ def main():
             pygame.draw.circle(screen, (50, 250, 50), v, PYTHON_R // 2)
         if apple:
             pygame.draw.circle(screen, (250, 0, 0), (apple_x, apple_y), PYTHON_R // 2)
+        screen.blit(img_text, (width - 100, 100))
         pygame.display.update()
     pygame.quit()
 
