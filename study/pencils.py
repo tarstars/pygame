@@ -21,8 +21,8 @@ def main():
     screen = pygame.display.set_mode(shape)
     running = True
     n = random.randint(5, 16)
-    loose_background = pygame.image.load("../Backgrounds/Loose_background.PNG")
-    background = pygame.image.load("../Backgrounds/background.PNG")
+    loose_background = pygame.image.load("../Backgrounds/Loose_background.png")
+    background = pygame.image.load("../Backgrounds/background.png")
     p_unsel = transform(pygame.image.load("../Pencils/green.jpg"))
     p_sel = transform(pygame.image.load("../Pencils/green_selected.jpg"))
     state = "choosing"
