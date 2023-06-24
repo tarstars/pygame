@@ -42,8 +42,10 @@ PYTHON_R = 40
 
 
 def main():
-    fail_sound = pygame.mixer.Sound("../Sounds/fail.mp3")
     shape = width, height = (1200, 800)
+    score = 0
+    text_massage = f"Score: {score}"
+    img_text = font.render(text_massage, True, (255, 0, 0))
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
@@ -92,6 +94,7 @@ def main():
             queue.pop()
         if apple_x == x and apple_y == y:
             apple = False
+            score += 1
 
         screen.fill((0, 170, 0))
         if (apple_x, apple_y) in queue:
