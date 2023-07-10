@@ -8,16 +8,11 @@ def main():
     img_red_rect = pygame.image.load("../Images/red_rect.png")
     chosen_1 = 0
     chosen_2 = 0
-    a = random.randint(1, 24)
-    b = random.randint(1, 24)
-    c = random.randint(1, 24)
+    a = [random.randint(1, 24), random.randint(1, 24), random.randint(1, 24)]
     state = "green rect"
     shape = width, height = (1200, 800)
     pygame.init()
     font = pygame.font.SysFont(None, 100)
-    img_text_1 = font.render(f"{a}", True, (0, 0, 0))
-    img_text_2 = font.render(f"{b}", True, (0, 0, 0))
-    img_text_3 = font.render(f"{c}", True, (0, 0, 0))
     screen = pygame.display.set_mode(shape)
     running = True
 
@@ -30,6 +25,8 @@ def main():
                     if state == "green rect":
                         state = "red rect"
                     elif state == "red rect":
+                        a[chosen_1] -= 1
+                        a[chosen_2] += 1
                         state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
@@ -48,6 +45,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((250, 50, 250))
+        img_text_1 = font.render(f"{a[0]}", True, (0, 0, 0))
+        img_text_2 = font.render(f"{a[1]}", True, (0, 0, 0))
+        img_text_3 = font.render(f"{a[2]}", True, (0, 0, 0))
         x1 = width // 2 - 400 + chosen_1 * 300
         x2 = width // 2 - 400 + chosen_2 * 300
         y = height // 2 - 100
