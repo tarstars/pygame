@@ -32,15 +32,19 @@ def main():
                     elif state == "red rect":
                         state = "green rect"
                 elif event.key == pygame.K_a:
-                    if state == "green rect" and chosen_1 > 0:
-                        chosen_1 -= 1
-                    elif state == "red rect" and chosen_2 > 0:
-                        chosen_2 -= 1
+                    if state == "green rect":
+                        if chosen_1 > 0:
+                            chosen_1 -= 1
+                    elif state == "red rect":
+                        if chosen_2 > 0:
+                            chosen_2 -= 1
                 elif event.key == pygame.K_d:
-                    if state == "green rect" and chosen_1 < 2:
-                        chosen_1 += 1
-                    elif state == "red rect" and chosen_2 < 2:
-                        chosen_2 += 1
+                    if state == "green rect":
+                        if chosen_1 < 2:
+                            chosen_1 += 1
+                    elif state == "red rect":
+                        if chosen_2 < 2:
+                            chosen_2 += 1
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((250, 50, 250))
