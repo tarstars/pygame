@@ -48,14 +48,15 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((250, 50, 250))
-        x = width // 2 - 100 + chosen_1 * 300 - 300
+        x1 = width // 2 - 400 + chosen_1 * 300
+        x2 = width // 2 - 400 + chosen_2 * 300
         y = height // 2 - 100
         screen.blit(img_text_1, (width // 2 - 300, height // 2))
         screen.blit(img_text_2, (width // 2, height // 2))
         screen.blit(img_text_3, (width // 2 + 300, height // 2))
-        screen.blit(img_green_rect, (x, y))
+        screen.blit(img_green_rect, (x1, y))
         if state == "red rect":
-            screen.blit(img_red_rect, (x + chosen_2 * 300, y))
+            screen.blit(img_red_rect, (x2, y))
         pygame.display.update()
     pygame.quit()
 
