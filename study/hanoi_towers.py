@@ -4,6 +4,7 @@ import pygame
 
 
 def main():
+    y = 0
     a = [1, 5]
     b = [2, 3]
     c = [4, 6]
@@ -48,6 +49,21 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((250, 50, 250))
+        for v in m[0]:
+            y += 50
+            img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
+            screen.blit(img_hanoi, (width // 2, height // 2 + y))
+        y = 0
+        for v in m[1]:
+            y += 50
+            img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
+            screen.blit(img_hanoi, (width // 2 - 300, height // 2 + y))
+        y = 0
+        for v in m[2]:
+            y += 50
+            img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
+            screen.blit(img_hanoi, (width // 2 - 600, height // 2 + y))
+        y = 0
         img_text_1 = font.render(f"{m[0]}", True, (0, 0, 0))
         img_text_2 = font.render(f"{m[1]}", True, (0, 0, 0))
         img_text_3 = font.render(f"{m[2]}", True, (0, 0, 0))
