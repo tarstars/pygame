@@ -16,7 +16,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((0, 170, 0))
-        for v in range(0, 6):
+        for v in a:
             y += 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{a[v]}.png")
             screen.blit(img_hanoi, (width // 2, height // 2 + y))
