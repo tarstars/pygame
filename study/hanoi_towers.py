@@ -4,7 +4,6 @@ import pygame
 
 
 def main():
-    y = 0
     a = [1, 5]
     b = [2, 3]
     c = [4, 6]
@@ -29,8 +28,8 @@ def main():
                     if state == "green rect":
                         state = "red rect"
                     elif state == "red rect":
-                        a[chosen_1] -= 1
-                        a[chosen_2] += 1
+                        disc = m[chosen_1].pop()
+                        m[chosen_2].append(disc)
                         state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
@@ -49,6 +48,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((250, 50, 250))
+        y = 0
         for v in m[0]:
             y += 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
@@ -64,15 +64,9 @@ def main():
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
             screen.blit(img_hanoi, (width // 2 - 600, height // 2 + y))
         y = 0
-        img_text_1 = font.render(f"{m[0]}", True, (0, 0, 0))
-        img_text_2 = font.render(f"{m[1]}", True, (0, 0, 0))
-        img_text_3 = font.render(f"{m[2]}", True, (0, 0, 0))
         x1 = width // 2 - 400 + chosen_1 * 300
         x2 = width // 2 - 400 + chosen_2 * 300
         y = height // 2 - 100
-        screen.blit(img_text_1, (width // 2 - 300, height // 2))
-        screen.blit(img_text_2, (width // 2, height // 2))
-        screen.blit(img_text_3, (width // 2 + 300, height // 2))
         screen.blit(img_green_rect, (x1, y))
         if state == "red rect":
             screen.blit(img_red_rect, (x2, y))
