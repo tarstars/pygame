@@ -27,9 +27,11 @@ def main():
                 if event.key == pygame.K_SPACE:
                     if state == "green rect":
                         state = "red rect"
-                    elif state == "red rect" and m[-1]:
-                        disc = m[chosen_1][-1].pop()
-                        m[chosen_2][-1].append(disc)
+                    elif state == "red rect":
+                        arr_from = m[chosen_1]
+                        arr_to = m[chosen_2]
+                        disc = arr_from.pop()
+                        arr_to.append(disc)
                         state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
