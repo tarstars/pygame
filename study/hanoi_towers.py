@@ -4,8 +4,8 @@ import pygame
 
 
 def main():
-    a = [1, 2, 3, 4, 5, 6]
-    b = []
+    a = [6, 5, 4, 3, 2]
+    b = [1]
     c = []
     img_green_rect = pygame.image.load("../Images/green_rect.png")
     img_red_rect = pygame.image.load("../Images/red_rect.png")
@@ -30,9 +30,10 @@ def main():
                     elif state == "red rect":
                         arr_from = m[chosen_1]
                         arr_to = m[chosen_2]
-                        disc = arr_from.pop()
-                        arr_to.append(disc)
-                        state = "green rect"
+                        if arr_from[-1] < arr_to[-1]:
+                            disc = arr_from.pop()
+                            arr_to.append(disc)
+                            state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
                         if chosen_1 > 0:
