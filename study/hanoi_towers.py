@@ -4,9 +4,9 @@ import pygame
 
 
 def main():
-    a = [1, 5]
-    b = [2, 3]
-    c = [4, 6]
+    a = [1, 2, 3, 4, 5, 6]
+    b = []
+    c = []
     img_green_rect = pygame.image.load("../Images/green_rect.png")
     img_red_rect = pygame.image.load("../Images/red_rect.png")
     chosen_1 = 0
@@ -27,7 +27,7 @@ def main():
                 if event.key == pygame.K_SPACE:
                     if state == "green rect":
                         state = "red rect"
-                    elif state == "red rect":
+                    elif state == "red rect" and m[-1]:
                         disc = m[chosen_1].pop()
                         m[chosen_2].append(disc)
                         state = "green rect"
@@ -50,17 +50,17 @@ def main():
         screen.fill((250, 50, 250))
         y = 0
         for v in m[0]:
-            y += 50
+            y -= 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
             screen.blit(img_hanoi, (width // 2, height // 2 + y))
         y = 0
         for v in m[1]:
-            y += 50
+            y -= 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
             screen.blit(img_hanoi, (width // 2 - 300, height // 2 + y))
         y = 0
         for v in m[2]:
-            y += 50
+            y -= 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
             screen.blit(img_hanoi, (width // 2 - 600, height // 2 + y))
         y = 0
