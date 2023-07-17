@@ -30,7 +30,7 @@ def main():
                     elif state == "red rect":
                         arr_from = m[chosen_1]
                         arr_to = m[chosen_2]
-                        if arr_from[-1] < arr_to[-1]:
+                        if arr_from and not arr_to or (arr_from[-1] < arr_to[-1]):
                             disc = arr_from.pop()
                             arr_to.append(disc)
                             state = "green rect"
