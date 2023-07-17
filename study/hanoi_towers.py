@@ -28,8 +28,8 @@ def main():
                     if state == "green rect":
                         state = "red rect"
                     elif state == "red rect" and m[-1]:
-                        disc = m[chosen_1].pop()
-                        m[chosen_2].append(disc)
+                        disc = m[chosen_1][-1].pop()
+                        m[chosen_2][-1].append(disc)
                         state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
