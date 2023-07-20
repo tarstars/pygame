@@ -13,8 +13,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((0, 170, 0))
-        for x in range(0, 1000, 100):
-            pygame.draw.rect(screen, (250, 0, 0), ((x, 0), (50, height)))
+        pygame.draw.rect(screen, (250, 0, 0), (width // 2, height, 50, 1000))
         pygame.display.update()
     pygame.quit()
 
