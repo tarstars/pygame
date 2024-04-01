@@ -4,8 +4,8 @@ import pygame
 
 
 def main():
-    a = [6, 5, 4, 3, 2]
-    b = [1]
+    a = [6, 5, 4, 3, 2, 1]
+    b = []
     c = []
     img_green_rect = pygame.image.load("../Images/green_rect.png")
     img_red_rect = pygame.image.load("../Images/red_rect.png")
@@ -33,7 +33,7 @@ def main():
                         if arr_from and not arr_to or (arr_from[-1] < arr_to[-1]):
                             disc = arr_from.pop()
                             arr_to.append(disc)
-                            state = "green rect"
+                        state = "green rect"
                 elif event.key == pygame.K_a:
                     if state == "green rect":
                         if chosen_1 > 0:
@@ -55,7 +55,7 @@ def main():
         for v in m[0]:
             y -= 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
-            screen.blit(img_hanoi, (width // 2, height // 2 + y))
+            screen.blit(img_hanoi, (width // 2 - 600, height // 2 + y))
         y = 0
         for v in m[1]:
             y -= 50
@@ -65,10 +65,10 @@ def main():
         for v in m[2]:
             y -= 50
             img_hanoi = pygame.image.load(f"../Images/Hanoi_{v}.png")
-            screen.blit(img_hanoi, (width // 2 - 600, height // 2 + y))
+            screen.blit(img_hanoi, (width // 2, height // 2 + y))
         y = 0
-        x1 = width // 2 - 400 + chosen_1 * 300
-        x2 = width // 2 - 400 + chosen_2 * 300
+        x1 = width // 2 - 600 + chosen_1 * 300
+        x2 = width // 2 - 600 + chosen_2 * 300
         y = height // 2 - 100
         screen.blit(img_green_rect, (x1, y))
         if state == "red rect":
