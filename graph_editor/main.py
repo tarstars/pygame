@@ -7,6 +7,13 @@ def find_point(a, pos):
         dp , dq = pos[0] - arr_pos[0], pos[1] - arr_pos[1]
         if dp ** 2 + dq ** 2 <= 100:
             return ind
+def skip_ind(v, p):
+    return v if v < p else v - 1
+
+
+def recalc_graph(g, p):
+    return {skip_ind(k, p): {skip_ind(vv, p) for vv in v if vv != p} for k,v in g.items() if k != p}
+
 
 
 def shortest(start_pos, end_pos, g):
@@ -54,7 +61,16 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    clicked_points.append(pygame.mouse.get_pos())
+                    current_pos = pygame.mouse.get_pos()
+                    current_ind = find_point(clicked_points, current_pos)
+                    if current_ind is None:
+                        clicked_points.append(pygame.mouse.get_pos())
+                    else:
+                        clicked_points.pop(current_ind)
+                        start_pos = None
+                        end_pos = None
+                        sel_point = None
+                        g = recalc_graph(g, current_ind)
                 elif pygame.mouse.get_pressed()[2]:
                     ind = find_point(clicked_points, pygame.mouse.get_pos())
                     if ind is not None:
