@@ -7,6 +7,8 @@ def find_point(a, pos):
         dp , dq = pos[0] - arr_pos[0], pos[1] - arr_pos[1]
         if dp ** 2 + dq ** 2 <= 100:
             return ind
+
+
 def skip_ind(v, p):
     return v if v < p else v - 1
 
@@ -71,6 +73,7 @@ def main():
                         end_pos = None
                         sel_point = None
                         g = recalc_graph(g, current_ind)
+                        path = []
                 elif pygame.mouse.get_pressed()[2]:
                     ind = find_point(clicked_points, pygame.mouse.get_pos())
                     if ind is not None:
