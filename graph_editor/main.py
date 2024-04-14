@@ -1,4 +1,5 @@
 import pygame
+from queue import Queue
 
 
 def find_point(a, pos):
@@ -6,6 +7,30 @@ def find_point(a, pos):
         dp , dq = pos[0] - arr_pos[0], pos[1] - arr_pos[1]
         if dp ** 2 + dq ** 2 <= 100:
             return ind
+
+
+def shortest(start_pos, end_pos, g):
+    q = Queue()
+    visited = set()
+    bt = {}
+    q.put(start_pos)
+    visited.add(start_pos)
+    while not q.empty():
+        v_current = q.get()
+        for v in g.get(v_current, []):
+            if v not in visited:
+                visited.add(v)
+                q.put(v)
+                bt[v] = v_current
+    if end_pos not in bt:
+        return []
+    pos = end_pos
+    path = []
+    while pos != start_pos:
+        path.append(pos)
+        pos = bt[pos]
+    path.append(pos)
+    return list(reversed(path))
 
 
 def main():
@@ -21,6 +46,7 @@ def main():
     start_pos = None
     sel_end = False
     end_pos = None
+    path = []
     while running:
         clock.tick(40)
         for event in pygame.event.get():
@@ -39,7 +65,7 @@ def main():
                             end_pos = ind
                             sel_end = False
                             if start_pos is not None:
-                                print(f"Ready to find path from {start_pos} to {end_pos}")
+                                path = shortest(start_pos, end_pos, g)
                         elif sel_point is None:
                             sel_point = ind
                         else:
@@ -67,6 +93,11 @@ def main():
         for source, destinations in g.items():
             for dest in destinations:
                 pygame.draw.line(screen, (0, 0, 250), clicked_points[source], clicked_points[dest])
+        prev = None
+        for current in path:
+            if prev is not None:
+                pygame.draw.line(screen, (250, 0, 0), clicked_points[prev], clicked_points[current], 5)
+            prev = current
         pygame.display.update()
     pygame.quit()
 
