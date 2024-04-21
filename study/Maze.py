@@ -1,10 +1,16 @@
 import pygame
 
 
+def find_hero(maze):
+    for p, row in enumerate(maze):
+        for q, c in enumerate(row):
+            if c == "H":
+                return p, q
 
-def draw_ground(screen, width, height, img_torch, img_bricks):
+
+def draw_ground(screen, width, height, img_torch, img_bricks, maze):
     p = 0
-    for line in open("Scene"):
+    for line in maze:
         v = 0
         for c in line:
             if c == "B":
@@ -21,9 +27,11 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
-
+    maze = open("Scene").readlines()
+    hero_pos = find_hero(maze)
     img_torch = pygame.image.load(r"Images\torch_50.jpg")
     img_bricks = pygame.image.load(r"Images\bricks_50.jpg")
+    print(hero_pos)
     clock = pygame.time.Clock()
     while running:
         clock.tick(40)
@@ -31,7 +39,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((0, 0, 0))
-        draw_ground(screen, width, height, img_torch, img_bricks)
+        draw_ground(screen, width, height, img_torch, img_bricks, maze)
         pygame.display.update()
     pygame.quit()
 
