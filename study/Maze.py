@@ -1,6 +1,24 @@
 import pygame
 
 
+def shift(xy):
+    x, y = xy
+    return x + 25, y + 25
+
+
+def try_move(hero_pos, maze, dp, dq):
+    p, q = hero_pos
+    width, height = len(maze[0]), len(maze)
+    np, nq = p + dp, q + dq
+    if 0 <= np < height and 0 <= nq < width and maze[np][nq] == ".":
+        return np, nq
+    return hero_pos
+
+
+def screen_coords(p, q):
+    return q * 50, 10 + p * 51
+
+
 def find_hero(maze):
     for p, row in enumerate(maze):
         for q, c in enumerate(row):
@@ -9,16 +27,11 @@ def find_hero(maze):
 
 
 def draw_ground(screen, width, height, img_torch, img_bricks, maze):
-    p = 0
-    for line in maze:
-        v = 0
-        for c in line:
-            if c == "B":
-                screen.blit(img_bricks, (v, 10 + p * 51))
-            elif c == "F":
-                screen.blit(img_torch, (v, 10 + p * 51))
-            v += 50
-        p += 1
+    for p, line in enumerate(maze):
+        for q, c in enumerate(line):
+            img = {"B": img_bricks, "F": img_torch}.get(c)
+            if img is not None:
+                screen.blit(img, screen_coords(p, q))
 
 
 
@@ -38,8 +51,18 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:
+                    hero_pos = try_move(hero_pos, maze, -1, 0)
+                elif event.key == pygame.K_a:
+                    hero_pos = try_move(hero_pos, maze, 0, -1)
+                elif event.key == pygame.K_s:
+                    hero_pos = try_move(hero_pos, maze, 1, 0)
+                elif event.key == pygame.K_d:
+                    hero_pos = try_move(hero_pos, maze, 0, 1)
         screen.fill((0, 0, 0))
         draw_ground(screen, width, height, img_torch, img_bricks, maze)
+        pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(hero_pos[0], hero_pos[1])), 25)
         pygame.display.update()
     pygame.quit()
 
