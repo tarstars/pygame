@@ -78,7 +78,7 @@ def main():
     print(hero_pos)
     clock = pygame.time.Clock()
     while running:
-        clock.tick(40)
+        clock.tick(3)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -96,6 +96,10 @@ def main():
         pygame.draw.circle(screen, (0, 250, 0), shift(screen_coords(hero_pos[0], hero_pos[1])), 25)
         pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(enemy_pos[0], enemy_pos[1])), 25)
         path = find_route(maze, enemy_pos, hero_pos)
+        if path:
+            enemy_pos = path[-2]
+        if enemy_pos == hero_pos:
+            running = False
         old_pos = None
         for pos in path:
             if old_pos is not None:
