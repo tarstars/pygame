@@ -44,7 +44,7 @@ def try_move(hero_pos, maze, dp, dq):
 
 
 def screen_coords(p, q):
-    return q * 50, 10 + p * 51
+    return q * 50, 10 + p * 50
 
 
 def find_person(maze, search):
