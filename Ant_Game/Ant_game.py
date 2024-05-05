@@ -4,7 +4,7 @@ from queue import Queue
 
 
 def find_route(maze, start_pos, end_pos):
-    width, height = len(maze[0]), len(maze)
+    width, height = maze.width, maze.height
     que = Queue()
     visited = set()
     que.put(start_pos)
@@ -14,7 +14,7 @@ def find_route(maze, start_pos, end_pos):
         v_current = que.get()
         for dp, dq in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
             np, nq = v_current[0] + dp, v_current[1] + dq
-            if 0 <= np < height and 0 <= nq < width and maze[np][nq] == "." and (np, nq) not in visited:
+            if 0 <= np < height and 0 <= nq < width and maze.is_available((np, nq)) and (np, nq) not in visited:
                 que.put((np, nq))
                 visited.add((np, nq))
                 bt[(np, nq)] = v_current
@@ -36,9 +36,9 @@ def shift(xy):
 
 def try_move(hero_pos, maze, dp, dq):
     p, q = hero_pos
-    width, height = len(maze[0]), len(maze)
+    width, height = maze.width, maze.height
     np, nq = p + dp, q + dq
-    if 0 <= np < height and 0 <= nq < width and maze[np][nq] == ".":
+    if 0 <= np < height and 0 <= nq < width and maze.is_available((np, nq)):
         return np, nq
     return hero_pos
 
@@ -54,13 +54,74 @@ def find_person(maze, search):
                 return p, q
 
 
-def draw_ground(screen, width, height, img_torch, img_bricks, maze):
-    for p, line in enumerate(maze):
-        for q, c in enumerate(line):
-            img = {"B": img_bricks, "F": img_torch}.get(c)
-            if img is not None:
-                screen.blit(img, screen_coords(p, q))
+def draw_ground(screen, img_torch, img_bricks, maze):
+    for pos in maze.get_bricks():
+        screen.blit(img_bricks, screen_coords(*pos))
+    for pos in maze.get_torches():
+        screen.blit(img_torch, screen_coords(*pos))
 
+
+class Ant:
+    def __init__(self, pos):
+        self.pos = pos
+        self.cp = 25
+        self.sugar_amount = 0
+
+
+class Sugar:
+    def __init__(self, pos):
+        self.amount = 5
+        self.pos = pos
+
+
+class Brick:
+    pass
+
+
+class Torch:
+    pass
+
+
+class Maze:
+    def __init__(self, data):
+        self.data = data
+        self.height, self.width = len(data), len(data[0])
+        self.brick_coords = set()
+        self.torch_coords = set()
+        self.sugars = []
+        self.pos2obj = {}
+        for p, line in enumerate(data):
+            for q, c in enumerate(line):
+                if c == "B":
+                    self.brick_coords.add((p, q))
+                    self.pos2obj[(p, q)] = Brick()
+                if c == "T":
+                    self.torch_coords.add((p, q))
+                    self.pos2obj[(p, q)] = Torch()
+                if c == "S":
+                    sugar = Sugar((p, q))
+                    self.sugars.append(sugar)
+                    self.pos2obj[(p, q)] = sugar
+
+    def is_available(self, pos):
+        return (pos not in self.brick_coords) and (pos not in self.brick_coords)
+
+    def get_bricks(self):
+        return self.brick_coords
+
+    def get_torches(self):
+        return self.torch_coords
+
+
+def load_level(file_name):
+    data = [list(line) for line in open(file_name).readlines()]
+
+    hero_pos = find_person(data, 'H')
+    enemy_pos = find_person(data, 'E')
+
+    maze = Maze(data)
+
+    return maze, hero_pos, enemy_pos
 
 
 def main():
@@ -68,14 +129,14 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
-    maze = [list(l) for l in open("Level_1").readlines()]
-    hero_pos = find_person(maze, 'H')
-    maze[hero_pos[0]][hero_pos[1]] = "."
-    enemy_pos = find_person(maze, 'E')
-    maze[enemy_pos[0]][enemy_pos[1]] = "."
+
+    maze, hero_pos, enemy_pos = load_level("Level_1")
+    ant = Ant(enemy_pos)
+    del enemy_pos
+
     img_torch = pygame.image.load(r"../study/Images/torch_50.jpg")
     img_bricks = pygame.image.load(r"../study/Images/bricks_50.jpg")
-    print(hero_pos)
+
     clock = pygame.time.Clock()
     while running:
         clock.tick(3)
@@ -92,14 +153,30 @@ def main():
                 elif event.key == pygame.K_d:
                     hero_pos = try_move(hero_pos, maze, 0, 1)
         screen.fill((0, 0, 0))
-        draw_ground(screen, width, height, img_torch, img_bricks, maze)
+
+        draw_ground(screen, img_torch, img_bricks, maze)
+
         pygame.draw.circle(screen, (0, 250, 0), shift(screen_coords(hero_pos[0], hero_pos[1])), 25)
-        pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(enemy_pos[0], enemy_pos[1])), 25)
-        path = find_route(maze, enemy_pos, hero_pos)
-        if path:
-            enemy_pos = path[-2]
-        if enemy_pos == hero_pos:
-            running = False
+
+        pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(ant.pos[0], ant.pos[1])), 25)
+
+        for sugar_piece in maze.sugars:
+            pygame.draw.circle(screen, (255, 255, 255), shift(screen_coords(sugar_piece.pos[0], sugar_piece.pos[1])), 25)
+
+        if ant.pos in maze.pos2obj and isinstance(maze.pos2obj[ant.pos], Sugar):
+            ant.sugar_amount += maze.pos2obj[ant.pos].amount
+            maze.pos2obj[ant.pos].amount = 0
+
+        if ant.sugar_amount == 0:
+            path = find_route(maze, ant.pos, hero_pos)
+            if path:
+                ant.pos = path[-2]
+            if ant.pos == hero_pos:
+                running = False
+        else:
+            ant.sugar_amount -= 1
+            ant.cp = max(0, ant.cp - 1)
+
         old_pos = None
         for pos in path:
             if old_pos is not None:
