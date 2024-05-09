@@ -55,7 +55,7 @@ def find_person(maze, search):
 
 
 def draw_ground(screen, img_torch, img_bricks, maze):
-    for pos in maze.get_bricks():
+    for pos in maze.get_walls():
         screen.blit(img_bricks, screen_coords(*pos))
     for pos in maze.get_torches():
         screen.blit(img_torch, screen_coords(*pos))
@@ -66,6 +66,19 @@ class Ant:
         self.pos = pos
         self.cp = 25
         self.sugar_amount = 0
+        self.angle = 0
+        self.img_5 = pygame.image.load(r"Images/C_Ant_5.png")
+
+    def set_pos(self, new_pos):
+        p, q = self.pos
+        np, nq = new_pos
+        dp, dq = np - p, nq - q
+        self.angle = {(-1, 0): 0, (0, -1): 90, (1, 0): 180, (0, 1): 270}[(dp, dq)]
+        self.pos = new_pos
+
+    def draw(self, screen):
+        rotated_ant = pygame.transform.rotate(self.img_5, self.angle)
+        screen.blit(rotated_ant, screen_coords(self.pos[0], self.pos[1]))
 
 
 class Sugar:
@@ -106,7 +119,7 @@ class Maze:
     def is_available(self, pos):
         return (pos not in self.brick_coords) and (pos not in self.brick_coords)
 
-    def get_bricks(self):
+    def get_walls(self):
         return self.brick_coords
 
     def get_torches(self):
@@ -135,7 +148,10 @@ def main():
     del enemy_pos
 
     img_torch = pygame.image.load(r"../study/Images/torch_50.jpg")
-    img_bricks = pygame.image.load(r"../study/Images/bricks_50.jpg")
+    img_walls = pygame.image.load(r"Images/Dirt_1.png")
+    img_hero_1 = pygame.image.load(r"Images/Hero_1.png")
+    img_sugar = pygame.image.load(r"Images/Sugar_1.png")
+    hero_angle = 0
 
     clock = pygame.time.Clock()
     while running:
@@ -146,22 +162,28 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     hero_pos = try_move(hero_pos, maze, -1, 0)
+                    hero_angle = 0
                 elif event.key == pygame.K_a:
                     hero_pos = try_move(hero_pos, maze, 0, -1)
+                    hero_angle = 90
                 elif event.key == pygame.K_s:
                     hero_pos = try_move(hero_pos, maze, 1, 0)
+                    hero_angle = 180
                 elif event.key == pygame.K_d:
                     hero_pos = try_move(hero_pos, maze, 0, 1)
-        screen.fill((0, 0, 0))
+                    hero_angle = 270
+        screen.fill((108, 60, 12))
 
-        draw_ground(screen, img_torch, img_bricks, maze)
+        draw_ground(screen, img_torch, img_walls, maze)
 
-        pygame.draw.circle(screen, (0, 250, 0), shift(screen_coords(hero_pos[0], hero_pos[1])), 25)
+        rotated_hero = pygame.transform.rotate(img_hero_1, hero_angle)
+        screen.blit(rotated_hero, screen_coords(hero_pos[0], hero_pos[1]))
 
-        pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(ant.pos[0], ant.pos[1])), 25)
+        ant.draw(screen)
 
         for sugar_piece in maze.sugars:
-            pygame.draw.circle(screen, (255, 255, 255), shift(screen_coords(sugar_piece.pos[0], sugar_piece.pos[1])), 25)
+            # pygame.draw.circle(screen, (255, 255, 255), shift(screen_coords(sugar_piece.pos[0], sugar_piece.pos[1])), 25)
+            screen.blit(img_sugar, screen_coords(sugar_piece.pos[0], sugar_piece.pos[1]))
 
         if ant.pos in maze.pos2obj and isinstance(maze.pos2obj[ant.pos], Sugar):
             ant.sugar_amount += maze.pos2obj[ant.pos].amount
@@ -170,7 +192,7 @@ def main():
         if ant.sugar_amount == 0:
             path = find_route(maze, ant.pos, hero_pos)
             if path:
-                ant.pos = path[-2]
+                ant.set_pos(path[-2])
             if ant.pos == hero_pos:
                 running = False
         else:
