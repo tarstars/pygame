@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from queue import Queue
 
@@ -29,6 +31,15 @@ def find_route(maze, start_pos, end_pos):
     return path
 
 
+def draw_path(screen, path):
+    old_pos = None
+    for pos in path:
+        if old_pos is not None:
+            pygame.draw.line(screen, (250, 250, 0), shift(screen_coords(old_pos[0], old_pos[1])),
+                             shift(screen_coords(pos[0], pos[1])))
+        old_pos = pos
+
+
 def shift(xy):
     x, y = xy
     return x + 25, y + 25
@@ -54,11 +65,30 @@ def find_person(maze, search):
                 return p, q
 
 
-def draw_ground(screen, img_torch, img_bricks, maze):
+def draw_ground(screen, img_coin, img_bricks, maze):
     for pos in maze.get_walls():
         screen.blit(img_bricks, screen_coords(*pos))
-    for pos in maze.get_torches():
-        screen.blit(img_torch, screen_coords(*pos))
+    for pos in maze.get_coins():
+        screen.blit(img_coin, screen_coords(*pos))
+
+
+class ButterFly:
+    def __init__(self, pos):
+        self.image = pygame.image.load(r"Images/Butter_1.png")
+        self.pos = pos
+
+    def draw(self, screen):
+        screen.blit(self.image, screen_coords(*self.pos))
+
+    def next(self):
+        p, q = self.pos
+        dp, dq = [(-1, 0), (0, -1), (1, 0), (0, 1)][random.randint(0, 3)]
+        np, nq = p + dp, q + dq
+        self.pos = np, nq
+
+    def in_maze(self, height, width):
+        p, q = self.pos
+        return (0 <= p < height) and (0 <= q < width)
 
 
 class Ant:
@@ -67,7 +97,7 @@ class Ant:
         self.cp = 25
         self.sugar_amount = 0
         self.angle = 0
-        self.img_5 = pygame.image.load(r"Images/C_Ant_5.png")
+        self.images = [pygame.image.load(f"Images//C_Ant_{num}.png") for num in range(1, 6)]
 
     def set_pos(self, new_pos):
         p, q = self.pos
@@ -77,7 +107,7 @@ class Ant:
         self.pos = new_pos
 
     def draw(self, screen):
-        rotated_ant = pygame.transform.rotate(self.img_5, self.angle)
+        rotated_ant = pygame.transform.rotate(self.images[(self.cp - 1) // 5], self.angle)
         screen.blit(rotated_ant, screen_coords(self.pos[0], self.pos[1]))
 
 
@@ -91,7 +121,7 @@ class Brick:
     pass
 
 
-class Torch:
+class Coin:
     pass
 
 
@@ -100,17 +130,18 @@ class Maze:
         self.data = data
         self.height, self.width = len(data), len(data[0])
         self.brick_coords = set()
-        self.torch_coords = set()
+        self.coin_coords = set()
         self.sugars = []
         self.pos2obj = {}
+        self.butterflies = []
         for p, line in enumerate(data):
             for q, c in enumerate(line):
                 if c == "B":
                     self.brick_coords.add((p, q))
                     self.pos2obj[(p, q)] = Brick()
-                if c == "T":
-                    self.torch_coords.add((p, q))
-                    self.pos2obj[(p, q)] = Torch()
+                if c == "C":
+                    self.coin_coords.add((p, q))
+                    self.pos2obj[(p, q)] = Coin()
                 if c == "S":
                     sugar = Sugar((p, q))
                     self.sugars.append(sugar)
@@ -122,8 +153,19 @@ class Maze:
     def get_walls(self):
         return self.brick_coords
 
-    def get_torches(self):
-        return self.torch_coords
+    def get_coins(self):
+        return self.coin_coords
+
+    def draw(self, screen):
+        for butterfly in self.butterflies:
+            butterfly.draw(screen)
+
+    def next(self):
+        for butterfly in self.butterflies:
+            butterfly.next()
+
+    def clean_up(self):
+        self.butterflies = [b for b in self.butterflies if b.in_maze(self.height, self.width)]
 
 
 def load_level(file_name):
@@ -147,7 +189,7 @@ def main():
     ant = Ant(enemy_pos)
     del enemy_pos
 
-    img_torch = pygame.image.load(r"../study/Images/torch_50.jpg")
+    img_coin = pygame.image.load(r"Images/Coin.png")
     img_walls = pygame.image.load(r"Images/Dirt_1.png")
     img_hero_1 = pygame.image.load(r"Images/Hero_1.png")
     img_sugar = pygame.image.load(r"Images/Sugar_1.png")
@@ -174,36 +216,40 @@ def main():
                     hero_angle = 270
         screen.fill((108, 60, 12))
 
-        draw_ground(screen, img_torch, img_walls, maze)
+        draw_ground(screen, img_coin, img_walls, maze)
 
         rotated_hero = pygame.transform.rotate(img_hero_1, hero_angle)
         screen.blit(rotated_hero, screen_coords(hero_pos[0], hero_pos[1]))
 
-        ant.draw(screen)
-
         for sugar_piece in maze.sugars:
-            # pygame.draw.circle(screen, (255, 255, 255), shift(screen_coords(sugar_piece.pos[0], sugar_piece.pos[1])), 25)
-            screen.blit(img_sugar, screen_coords(sugar_piece.pos[0], sugar_piece.pos[1]))
+            if sugar_piece.amount:
+                screen.blit(img_sugar, screen_coords(sugar_piece.pos[0], sugar_piece.pos[1]))
 
-        if ant.pos in maze.pos2obj and isinstance(maze.pos2obj[ant.pos], Sugar):
-            ant.sugar_amount += maze.pos2obj[ant.pos].amount
-            maze.pos2obj[ant.pos].amount = 0
+        if ant is not None:
+            ant.draw(screen)
 
-        if ant.sugar_amount == 0:
-            path = find_route(maze, ant.pos, hero_pos)
-            if path:
-                ant.set_pos(path[-2])
-            if ant.pos == hero_pos:
-                running = False
-        else:
-            ant.sugar_amount -= 1
-            ant.cp = max(0, ant.cp - 1)
+            if ant.pos in maze.pos2obj and isinstance(maze.pos2obj[ant.pos], Sugar):
+                ant.sugar_amount += maze.pos2obj[ant.pos].amount
+                maze.pos2obj[ant.pos].amount = 0
 
-        old_pos = None
-        for pos in path:
-            if old_pos is not None:
-                pygame.draw.line(screen, (250, 250, 0), shift(screen_coords(old_pos[0], old_pos[1])), shift(screen_coords(pos[0], pos[1])))
-            old_pos = pos
+            if ant.sugar_amount == 0:
+                path = find_route(maze, ant.pos, hero_pos)
+                if path:
+                    ant.set_pos(path[-2])
+                if ant.pos == hero_pos:
+                    running = False
+            else:
+                ant.sugar_amount -= 1
+                ant.cp = max(0, ant.cp - 1)
+                if ant.cp == 0:
+                    maze.butterflies.append(ButterFly(ant.pos))
+                    ant = None
+
+        maze.draw(screen)
+        maze.next()
+        maze.clean_up()
+        running = running and (ant is not None or maze.butterflies)
+
         pygame.display.update()
     pygame.quit()
 
