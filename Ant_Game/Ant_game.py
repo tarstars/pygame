@@ -65,11 +65,9 @@ def find_person(maze, search):
                 return p, q
 
 
-def draw_ground(screen, img_coin, img_bricks, maze):
+def draw_ground(screen, img_bricks, maze):
     for pos in maze.get_walls():
         screen.blit(img_bricks, screen_coords(*pos))
-    for pos in maze.get_coins():
-        screen.blit(img_coin, screen_coords(*pos))
 
 
 class ButterFly:
@@ -122,7 +120,17 @@ class Brick:
 
 
 class Coin:
-    pass
+    def __init__(self, pos):
+        self.pos = pos
+        self.image = pygame.image.load(r"Images/Coin.png")
+        self.blinks = [pygame.image.load(f"Images/Blink_{v}.png") for v in (1, 2, 3)]
+        self.active = True
+
+    def draw(self, screen, time):
+        if self.active:
+            screen.blit(self.image, screen_coords(*self.pos))
+            if not random.randint(0, 4):
+                screen.blit(self.blinks[random.randint(0, 2)], screen_coords(*self.pos))
 
 
 class Maze:
@@ -130,22 +138,24 @@ class Maze:
         self.data = data
         self.height, self.width = len(data), len(data[0])
         self.brick_coords = set()
-        self.coin_coords = set()
+        self.coins = []
         self.sugars = []
         self.pos2obj = {}
         self.butterflies = []
         for p, line in enumerate(data):
             for q, c in enumerate(line):
+                pos = p, q
                 if c == "B":
-                    self.brick_coords.add((p, q))
-                    self.pos2obj[(p, q)] = Brick()
+                    self.brick_coords.add(pos)
+                    self.pos2obj[pos] = Brick()
                 if c == "C":
-                    self.coin_coords.add((p, q))
-                    self.pos2obj[(p, q)] = Coin()
+                    coin = Coin(pos)
+                    self.coins.append(coin)
+                    self.pos2obj[pos] = coin
                 if c == "S":
-                    sugar = Sugar((p, q))
+                    sugar = Sugar(pos)
                     self.sugars.append(sugar)
-                    self.pos2obj[(p, q)] = sugar
+                    self.pos2obj[pos] = sugar
 
     def is_available(self, pos):
         return (pos not in self.brick_coords) and (pos not in self.brick_coords)
@@ -153,12 +163,11 @@ class Maze:
     def get_walls(self):
         return self.brick_coords
 
-    def get_coins(self):
-        return self.coin_coords
-
-    def draw(self, screen):
+    def draw(self, screen, time):
         for butterfly in self.butterflies:
             butterfly.draw(screen)
+        for coin in self.coins:
+            coin.draw(screen, time)
 
     def next(self):
         for butterfly in self.butterflies:
@@ -180,16 +189,16 @@ def load_level(file_name):
 
 
 def main():
-    shape = width, height = (1200, 800)
+    shape = (1200, 800)
     pygame.init()
     screen = pygame.display.set_mode(shape)
     running = True
+    time = 0
 
     maze, hero_pos, enemy_pos = load_level("Level_1")
     ant = Ant(enemy_pos)
     del enemy_pos
 
-    img_coin = pygame.image.load(r"Images/Coin.png")
     img_walls = pygame.image.load(r"Images/Dirt_1.png")
     img_hero_1 = pygame.image.load(r"Images/Hero_1.png")
     img_sugar = pygame.image.load(r"Images/Sugar_1.png")
@@ -216,7 +225,7 @@ def main():
                     hero_angle = 270
         screen.fill((108, 60, 12))
 
-        draw_ground(screen, img_coin, img_walls, maze)
+        draw_ground(screen, img_walls, maze)
 
         rotated_hero = pygame.transform.rotate(img_hero_1, hero_angle)
         screen.blit(rotated_hero, screen_coords(hero_pos[0], hero_pos[1]))
@@ -244,11 +253,15 @@ def main():
                 if ant.cp == 0:
                     maze.butterflies.append(ButterFly(ant.pos))
                     ant = None
+        if hero_pos in maze.pos2obj and isinstance(maze.pos2obj[hero_pos], Coin):
+            maze.pos2obj[hero_pos].active = False
 
-        maze.draw(screen)
+        maze.draw(screen, time)
         maze.next()
         maze.clean_up()
         running = running and (ant is not None or maze.butterflies)
+
+        time += 1
 
         pygame.display.update()
     pygame.quit()
