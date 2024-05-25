@@ -55,7 +55,7 @@ def try_move(hero_pos, maze, dp, dq):
 
 
 def screen_coords(p, q):
-    return q * 50, 10 + p * 50
+    return q * 50, 10 + (p + 1) * 50
 
 
 def find_person(maze, search):
@@ -68,6 +68,30 @@ def find_person(maze, search):
 def draw_ground(screen, img_bricks, maze):
     for pos in maze.get_walls():
         screen.blit(img_bricks, screen_coords(*pos))
+
+
+class Hero:
+    def __init__(self):
+        self.sanity = 10
+        self.hero_costumes = [pygame.image.load(f"Images/Hero_{v}.png") for v in (1, 2, 3)]
+        self.pos = None
+
+    def damage(self):
+        self.sanity -= 1
+
+    def draw(self, screen, hero_angle):
+        rotated_hero = pygame.transform.rotate(self.get_costume(), hero_angle)
+        screen.blit(rotated_hero, screen_coords(self.pos[0], self.pos[1]))
+
+    def dead(self):
+        return self.sanity == 0
+
+    def get_costume(self):
+        if self.sanity > 7:
+            return self.hero_costumes[0]
+        if self.sanity > 5:
+            return self.hero_costumes[1]
+        return self.hero_costumes[2]
 
 
 class ButterFly:
@@ -194,14 +218,19 @@ def main():
     screen = pygame.display.set_mode(shape)
     running = True
     time = 0
+    coins = 0
+    hero = Hero()
 
-    maze, hero_pos, enemy_pos = load_level("Level_1")
+    maze, hero.pos, enemy_pos = load_level("Level_1")
     ant = Ant(enemy_pos)
     del enemy_pos
 
     img_walls = pygame.image.load(r"Images/Dirt_1.png")
-    img_hero_1 = pygame.image.load(r"Images/Hero_1.png")
     img_sugar = pygame.image.load(r"Images/Sugar_1.png")
+
+    font = pygame.font.SysFont(None, 100)
+    img_coins = font.render(f"{coins}", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+
     hero_angle = 0
 
     clock = pygame.time.Clock()
@@ -212,23 +241,24 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
-                    hero_pos = try_move(hero_pos, maze, -1, 0)
+                    hero.pos = try_move(hero.pos, maze, -1, 0)
                     hero_angle = 0
                 elif event.key == pygame.K_a:
-                    hero_pos = try_move(hero_pos, maze, 0, -1)
+                    hero.pos = try_move(hero.pos, maze, 0, -1)
                     hero_angle = 90
                 elif event.key == pygame.K_s:
-                    hero_pos = try_move(hero_pos, maze, 1, 0)
+                    hero.pos = try_move(hero.pos, maze, 1, 0)
                     hero_angle = 180
                 elif event.key == pygame.K_d:
-                    hero_pos = try_move(hero_pos, maze, 0, 1)
+                    hero.pos = try_move(hero.pos, maze, 0, 1)
                     hero_angle = 270
         screen.fill((108, 60, 12))
 
         draw_ground(screen, img_walls, maze)
 
-        rotated_hero = pygame.transform.rotate(img_hero_1, hero_angle)
-        screen.blit(rotated_hero, screen_coords(hero_pos[0], hero_pos[1]))
+        hero.draw(screen, hero_angle)
+
+        screen.blit(img_coins, (shape[0] - img_coins.get_width(), 0))
 
         for sugar_piece in maze.sugars:
             if sugar_piece.amount:
@@ -242,19 +272,23 @@ def main():
                 maze.pos2obj[ant.pos].amount = 0
 
             if ant.sugar_amount == 0:
-                path = find_route(maze, ant.pos, hero_pos)
+                path = find_route(maze, ant.pos, hero.pos)
                 if path:
                     ant.set_pos(path[-2])
-                if ant.pos == hero_pos:
-                    running = False
+                if ant.pos == hero.pos:
+                    hero.damage()
             else:
                 ant.sugar_amount -= 1
                 ant.cp = max(0, ant.cp - 1)
                 if ant.cp == 0:
                     maze.butterflies.append(ButterFly(ant.pos))
                     ant = None
-        if hero_pos in maze.pos2obj and isinstance(maze.pos2obj[hero_pos], Coin):
-            maze.pos2obj[hero_pos].active = False
+        if hero.pos in maze.pos2obj and isinstance(maze.pos2obj[hero.pos], Coin):
+            if maze.pos2obj[hero.pos].active:
+                coins += 1
+                img_coins = font.render(f"{coins}", True,
+                                        (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+            maze.pos2obj[hero.pos].active = False
 
         maze.draw(screen, time)
         maze.next()
@@ -262,6 +296,9 @@ def main():
         running = running and (ant is not None or maze.butterflies)
 
         time += 1
+
+        if hero.dead():
+            running = False
 
         pygame.display.update()
     pygame.quit()
