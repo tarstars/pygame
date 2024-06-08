@@ -70,6 +70,14 @@ def draw_ground(screen, img_bricks, maze):
         screen.blit(img_bricks, screen_coords(*pos))
 
 
+class Sanity:
+    def __init__(self):
+        self.sanity = [pygame.image.load(f"Images/Sanity_{v}.png") for v in (1, 2, 3)]
+
+    def draw(self, screen, sanity_ind):
+        screen.blit(self.sanity[sanity_ind], (0, 0))
+
+
 class Hero:
     def __init__(self):
         self.sanity = 10
@@ -87,12 +95,15 @@ class Hero:
     def dead(self):
         return self.sanity == 0
 
-    def get_costume(self):
+    def get_sanity_ind(self):
         if self.sanity > 7:
-            return self.hero_costumes[0]
+            return 0
         if self.sanity > 5:
-            return self.hero_costumes[1]
-        return self.hero_costumes[2]
+            return 1
+        return 2
+
+    def get_costume(self):
+        return self.hero_costumes[self.get_sanity_ind()]
 
     def move(self, key, maze):
         dda = {
@@ -225,16 +236,14 @@ def load_level(file_name):
     return maze, hero_pos, enemy_pos
 
 
-def main():
-    shape = (1200, 800)
-    pygame.init()
-    screen = pygame.display.set_mode(shape)
+def level_player(screen, shape, file_name_level):
     running = True
     time = 0
     coins = 0
     hero = Hero()
+    sanity = Sanity()
 
-    maze, hero.pos, enemy_pos = load_level("Level_1")
+    maze, hero.pos, enemy_pos = load_level(file_name_level)
     ant = Ant(enemy_pos)
     del enemy_pos
 
@@ -256,7 +265,9 @@ def main():
 
         draw_ground(screen, img_walls, maze)
 
-        hero.draw(screen)
+        if hero.pos is not None:
+            hero.draw(screen)
+            sanity.draw(screen, hero.get_sanity_ind())
 
         screen.blit(img_coins, (shape[0] - img_coins.get_width(), 0))
 
@@ -264,7 +275,7 @@ def main():
             if sugar_piece.amount:
                 screen.blit(img_sugar, screen_coords(sugar_piece.pos[0], sugar_piece.pos[1]))
 
-        if ant is not None:
+        if ant is not None and ant.pos is not None:
             ant.draw(screen)
 
             if ant.pos in maze.pos2obj and isinstance(maze.pos2obj[ant.pos], Sugar):
@@ -301,6 +312,15 @@ def main():
             running = False
 
         pygame.display.update()
+
+
+def main():
+    shape = (1200, 800)
+    pygame.init()
+    screen = pygame.display.set_mode(shape)
+    levels = ["Level_1", "Level_2"]
+    for current_level in levels:
+        level_player(screen, shape, current_level)
     pygame.quit()
 
 
