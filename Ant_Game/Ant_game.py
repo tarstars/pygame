@@ -75,12 +75,13 @@ class Hero:
         self.sanity = 10
         self.hero_costumes = [pygame.image.load(f"Images/Hero_{v}.png") for v in (1, 2, 3)]
         self.pos = None
+        self.angle = 0
 
     def damage(self):
         self.sanity -= 1
 
-    def draw(self, screen, hero_angle):
-        rotated_hero = pygame.transform.rotate(self.get_costume(), hero_angle)
+    def draw(self, screen):
+        rotated_hero = pygame.transform.rotate(self.get_costume(), self.angle)
         screen.blit(rotated_hero, screen_coords(self.pos[0], self.pos[1]))
 
     def dead(self):
@@ -92,6 +93,18 @@ class Hero:
         if self.sanity > 5:
             return self.hero_costumes[1]
         return self.hero_costumes[2]
+
+    def move(self, key, maze):
+        dda = {
+            pygame.K_w: (-1, 0, 0),
+            pygame.K_a: (0, -1, 90),
+            pygame.K_s: (1, 0, 180),
+            pygame.K_d: (0, 1, 270)
+        }.get(key)
+        if dda is not None:
+            dp, dq, angle = dda
+            self.pos = try_move(self.pos, maze, dp, dq)
+            self.angle = angle
 
 
 class ButterFly:
@@ -231,8 +244,6 @@ def main():
     font = pygame.font.SysFont(None, 100)
     img_coins = font.render(f"{coins}", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
 
-    hero_angle = 0
-
     clock = pygame.time.Clock()
     while running:
         clock.tick(3)
@@ -240,23 +251,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
-                    hero.pos = try_move(hero.pos, maze, -1, 0)
-                    hero_angle = 0
-                elif event.key == pygame.K_a:
-                    hero.pos = try_move(hero.pos, maze, 0, -1)
-                    hero_angle = 90
-                elif event.key == pygame.K_s:
-                    hero.pos = try_move(hero.pos, maze, 1, 0)
-                    hero_angle = 180
-                elif event.key == pygame.K_d:
-                    hero.pos = try_move(hero.pos, maze, 0, 1)
-                    hero_angle = 270
+                hero.move(event.key, maze)
         screen.fill((108, 60, 12))
 
         draw_ground(screen, img_walls, maze)
 
-        hero.draw(screen, hero_angle)
+        hero.draw(screen)
 
         screen.blit(img_coins, (shape[0] - img_coins.get_width(), 0))
 
