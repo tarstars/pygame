@@ -181,6 +181,37 @@ class Coin:
                 screen.blit(self.blinks[random.randint(0, 2)], screen_coords(*self.pos))
 
 
+class Bullet:
+    def __init__(self, pos, vel, angle, maze):
+        self.pos = pos
+        self.vel = vel
+        self.angle = angle
+        self.maze = maze
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, (250, 0, 0), shift(screen_coords(*self.pos)), 25)
+
+    def next(self):
+        self.pos = self.pos[0] + self.vel[0], self.pos[1] + self.vel[1]
+
+    def in_wall(self):
+        return self.pos in self.maze.pos2obj and self.maze.pos2obj[self.pos]
+
+
+
+def create_bullet(maze, hero):
+    pos = hero.pos
+    angle = hero.angle
+    angle2vel = {
+    0: (-1, 0),
+    90: (0, -1),
+    180: (1, 0),
+    270: (0, 1)
+    }
+    vel = angle2vel[angle]
+    return Bullet(pos, vel, angle, maze)
+
+
 class Maze:
     def __init__(self, data):
         self.data = data
@@ -242,6 +273,8 @@ def level_player(screen, shape, file_name_level):
     coins = 0
     hero = Hero()
     sanity = Sanity()
+    rem_sho = 1
+    bul = None
 
     maze, hero.pos, enemy_pos = load_level(file_name_level)
     ant = Ant(enemy_pos)
@@ -261,9 +294,17 @@ def level_player(screen, shape, file_name_level):
                 running = False
             elif event.type == pygame.KEYDOWN:
                 hero.move(event.key, maze)
+
+                if pygame.K_SPACE == event.key:
+                    if bul is None:
+                        bul = create_bullet(maze, hero)
+
         screen.fill((108, 60, 12))
 
         draw_ground(screen, img_walls, maze)
+
+        if bul is not None:
+            bul.draw(screen)
 
         if hero.pos is not None:
             hero.draw(screen)
@@ -284,6 +325,7 @@ def level_player(screen, shape, file_name_level):
 
             if ant.sugar_amount == 0:
                 path = find_route(maze, ant.pos, hero.pos)
+                draw_path(screen, path)
                 if path:
                     ant.set_pos(path[-2])
                 if ant.pos == hero.pos:
@@ -299,11 +341,16 @@ def level_player(screen, shape, file_name_level):
                 coins += 1
                 img_coins = font.render(f"{coins}", True,
                                         (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
-            maze.pos2obj[hero.pos].active = False
+                maze.pos2obj[hero.pos].active = False
 
         maze.draw(screen, time)
         maze.next()
         maze.clean_up()
+
+        if bul is not None:
+            bul.next()
+            if bul.in_wall():
+                bul = None
         running = running and (ant is not None or maze.butterflies)
 
         time += 1
